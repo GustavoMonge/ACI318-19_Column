@@ -19,11 +19,13 @@ struct Triangle: Shape {
     }
 }
 
-struct Arc: Shape {
+struct Arc: InsettableShape {
     
     let startAngle: Angle
     let endAngle : Angle
     let clockwise: Bool
+    // variable to implement strokrBorder and conform to InsettableShape Protocol
+    var insetAmount: CGFloat = 0.0
     
     func path(in rect: CGRect) -> Path {
         
@@ -31,19 +33,27 @@ struct Arc: Shape {
         let modifiedStart = startAngle - rotationAdjustment
         let modifiedEnd = endAngle - rotationAdjustment
         
+        
         var path = Path()
         
-        path.addArc(center: CGPoint(x: rect.midX, y: CGFloat(rect.midY)), radius: CGFloat(min(rect.width/2, rect.height/2)), startAngle: modifiedStart, endAngle: modifiedEnd, clockwise: !clockwise)
+        path.addArc(center: CGPoint(x: rect.midX, y: CGFloat(rect.midY)), radius: CGFloat(min((rect.width/2 - insetAmount), (rect.height/2 - insetAmount))), startAngle: modifiedStart, endAngle: modifiedEnd, clockwise: !clockwise)
         
         return path
+    }
+    
+    // func to be able to use .strokeBorder
+    func inset(by amount: CGFloat) -> some InsettableShape {
+        var arc = self
+        arc.insetAmount += amount
+        return arc
     }
 }
 
 struct ContentView: View {
 var body: some View {
     
-    Arc(startAngle: Angle.degrees(0), endAngle: Angle.degrees(110), clockwise: true)
-                .stroke(Color.red, style: StrokeStyle(lineWidth: 10))
+    Arc(startAngle: Angle.degrees(-90), endAngle: Angle.degrees(90), clockwise: true)
+                .strokeBorder(Color.red, style: StrokeStyle(lineWidth: 40))
                 .frame(width: 300, height: 300)
     
     
