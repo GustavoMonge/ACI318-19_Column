@@ -19,14 +19,39 @@ struct Triangle: Shape {
     }
 }
 
-
+struct Arc: Shape {
+    
+    let startAngle: Angle
+    let endAngle : Angle
+    let clockwise: Bool
+    
+    func path(in rect: CGRect) -> Path {
+        
+        let rotationAdjustment = Angle.degrees(90)
+        let modifiedStart = startAngle - rotationAdjustment
+        let modifiedEnd = endAngle - rotationAdjustment
+        
+        var path = Path()
+        
+        path.addArc(center: CGPoint(x: rect.midX, y: CGFloat(rect.midY)), radius: CGFloat(min(rect.width/2, rect.height/2)), startAngle: modifiedStart, endAngle: modifiedEnd, clockwise: !clockwise)
+        
+        return path
+    }
+}
 
 struct ContentView: View {
-    var body: some View {
-        Triangle()
- //           .fill(Color.red)
-            .stroke(Color.red, style: StrokeStyle(lineWidth: 10, lineCap: .round, lineJoin: .round))
-            .frame(width: 300, height: 300)
+var body: some View {
+    
+    Arc(startAngle: Angle.degrees(0), endAngle: Angle.degrees(110), clockwise: true)
+                .stroke(Color.red, style: StrokeStyle(lineWidth: 10))
+                .frame(width: 300, height: 300)
+    
+    
+    
+//        Triangle()
+// //           .fill(Color.red)
+//            .stroke(Color.red, style: StrokeStyle(lineWidth: 10, lineCap: .round, lineJoin: .round))
+//            .frame(width: 300, height: 300)
     }
 }
     
